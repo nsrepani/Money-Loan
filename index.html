@@ -1191,6 +1191,7 @@
   }
 
   function removeLoan(id){
+    if(!confirm('Are you sure you want to delete this entry?')) return;
     loans = loans.filter(l=>l.id!==id);
     saveLoans();
     renderLoans();
@@ -1609,6 +1610,7 @@
   }
 
   function removeAccount(id){
+    if(!confirm('Are you sure you want to delete this entry?')) return;
     accounts = accounts.filter(a=>a.id!==id);
     save();
     render();
