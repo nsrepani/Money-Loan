@@ -106,6 +106,121 @@
   .card.milestone-gold{
     box-shadow: 0 0 0 2px var(--gold), 0 0 14px rgba(201,162,39,0.35);
   }
+  .loan-finished-note{
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--card-accent, #1F5C29);
+    background: rgba(255,255,255,0.5);
+    border-radius: 4px;
+    padding: 8px 10px;
+    margin: 0 0 12px;
+    line-height: 1.4;
+  }
+  .goal-progress-text{
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: var(--text-mute);
+    margin: 0 0 10px;
+  }
+  .goal-reached-note{
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--card-accent, #1F5C29);
+    background: rgba(255,255,255,0.5);
+    border-radius: 4px;
+    padding: 8px 10px;
+    margin: 0 0 12px;
+    line-height: 1.4;
+  }
+  .calc-display{
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    text-align: right;
+    padding: 16px 14px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .calc-grid{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .calc-btn{
+    padding: 14px 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid var(--text-mute);
+    background: transparent;
+    color: var(--text-dark);
+    cursor: pointer;
+  }
+  .calc-btn:hover{ background: rgba(0,0,0,0.05); }
+  .calc-btn.op{
+    border-color: var(--teal);
+    color: var(--teal-dark);
+  }
+  .calc-btn.op:hover{ background: rgba(31,111,92,0.1); }
+  .calc-btn.clear{
+    border-color: var(--clay);
+    color: var(--clay-dark);
+  }
+  .calc-btn.clear:hover{ background: rgba(178,75,50,0.08); }
+  .calc-btn.equals{
+    background: var(--teal);
+    border-color: var(--teal);
+    color: var(--paper);
+  }
+  .calc-btn.equals:hover{ background: var(--teal-dark); }
+  .global-toggle-bar{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 1.5rem 0;
+    flex-wrap: wrap;
+  }
+  .hide-toggle-btn{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid var(--text-mute);
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-mute);
+    cursor: pointer;
+  }
+  .hide-toggle-btn:hover{ border-color: var(--teal); color: var(--teal-dark); }
+  .hide-toggle-btn.active{
+    border-color: var(--gold);
+    color: var(--text-dark);
+    background: rgba(201,162,39,0.1);
+  }
+  .hide-toggle-btn svg{ display: block; }
+  .eye-btn{
+    background: none;
+    border: none;
+    padding: 2px 4px;
+    color: var(--text-mute);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .eye-btn:hover{ color: var(--card-accent, var(--teal-dark)); }
+  .eye-btn svg{ display: block; }
   .ledger{
     padding: 1.75rem 1.5rem 0;
   }
@@ -276,7 +391,7 @@
     font-size: 14px;
   }
   .history-link{
-    display: inline-block;
+    display: block;
     margin-top: 10px;
     background: none;
     border: none;
@@ -287,6 +402,7 @@
     color: var(--card-accent, var(--teal-dark));
     text-decoration: underline;
     cursor: pointer;
+    text-align: left;
   }
   .modal-overlay{
     position: fixed;
@@ -531,8 +647,18 @@
 <body>
 
 <div class="wrap">
+  <div class="global-toggle-bar">
+    <button class="hide-toggle-btn" id="hide-savings-total-btn">
+      <span id="hide-savings-total-icon"></span>
+      <span id="hide-savings-total-text">Hide Total Savings</span>
+    </button>
+    <button class="hide-toggle-btn" id="hide-loan-total-btn">
+      <span id="hide-loan-total-icon"></span>
+      <span id="hide-loan-total-text">Hide Total Loan</span>
+    </button>
+  </div>
   <div class="vault">
-    <p class="vault-label">Total savings</p>
+    <p class="vault-label">Total Savings</p>
     <p class="vault-total" id="total">₱0.00</p>
     <p class="vault-sub" id="acct-count">0 accounts</p>
     <div class="milestones" id="savings-milestones"></div>
@@ -541,31 +667,31 @@
   </div>
 
   <div class="ledger">
-    <p class="ledger-heading">Your accounts</p>
+    <p class="ledger-heading">Your Accounts</p>
     <div class="grid" id="grid"></div>
-    <button class="add-account" id="add-account-btn">+ add account</button>
+    <button class="add-account" id="add-account-btn">+ Add Account</button>
   </div>
 
   <div class="ledger">
     <div class="vault loan-vault">
-      <p class="vault-label">total remaining loans</p>
+      <p class="vault-label">Total Remaining Loans</p>
       <p class="vault-total" id="loan-total">₱0.00</p>
       <p class="vault-sub" id="loan-count">0 loans</p>
       <div class="milestones" id="loan-milestones"></div>
       <p class="milestone-label" id="loan-milestone-label"></p>
       <div class="stitch"></div>
     </div>
-    <p class="ledger-heading">Your loans</p>
+    <p class="ledger-heading">Your Loans</p>
     <div class="grid" id="loan-grid"></div>
-    <button class="add-account" id="add-loan-btn">+ add loan</button>
+    <button class="add-account" id="add-loan-btn">+ Add Loan</button>
     <div class="loan-form-box" id="loan-form">
       <input type="text" id="loan-name-input" placeholder="Loan name (e.g. Motorcycle loan)">
       <input type="number" id="loan-amount-input" placeholder="Monthly installment amount" step="0.01" min="0">
       <input type="date" id="loan-duedate-input" aria-label="next due date">
       <input type="number" id="loan-installments-input" placeholder="Number of installments" min="1" step="1">
       <div class="loan-form-actions">
-        <button id="loan-form-save">add loan</button>
-        <button id="loan-form-cancel">cancel</button>
+        <button id="loan-form-save">Add Loan</button>
+        <button id="loan-form-cancel">Cancel</button>
       </div>
     </div>
   </div>
@@ -573,8 +699,8 @@
   <div class="ledger">
     <p class="ledger-heading" style="font-size:14px;">Backup &amp; export</p>
     <div class="backup-row">
-      <button class="backup-btn" id="backup-btn">export / back up now</button>
-      <label class="backup-btn" for="restore-input">import backup</label>
+      <button class="backup-btn" id="backup-btn">Export / Back Up Now</button>
+      <label class="backup-btn" for="restore-input">Import Backup</label>
       <input type="file" id="restore-input" accept="application/json" style="display:none;">
     </div>
     <p class="stamp" id="last-updated"></p>
@@ -589,17 +715,87 @@
       <button class="modal-close" id="history-modal-close" aria-label="close">&times;</button>
     </div>
     <div class="history-filters" id="history-filters">
-      <button class="filter-btn" data-days="7">7 days</button>
-      <button class="filter-btn" data-days="14">14 days</button>
-      <button class="filter-btn" data-days="30">30 days</button>
+      <button class="filter-btn" data-days="7">7 Days</button>
+      <button class="filter-btn" data-days="14">14 Days</button>
+      <button class="filter-btn" data-days="30">30 Days</button>
       <button class="filter-btn" data-days="all">All</button>
     </div>
     <div class="modal-body" id="history-modal-body"></div>
   </div>
 </div>
 
+<div class="modal-overlay" id="goal-modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Edit Goal</h3>
+      <button class="modal-close" id="goal-modal-close" aria-label="close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="loan-form-box open" style="margin-top:0;border:none;padding:0;">
+        <input type="number" id="goal-amount-input" placeholder="Goal amount (\u20B1)" min="0" step="100">
+        <input type="date" id="goal-date-input" aria-label="target date to reach this goal">
+        <div class="loan-form-actions">
+          <button id="goal-modal-save">Save Goal</button>
+          <button id="goal-modal-cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="calculator-modal">
+  <div class="modal-box" style="max-width: 300px;">
+    <div class="modal-head">
+      <h3>Calculator</h3>
+      <button class="modal-close" id="calculator-modal-close" aria-label="close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="calc-display" id="calc-display">0</div>
+      <div class="calc-grid">
+        <button class="calc-btn clear" data-action="clear">C</button>
+        <button class="calc-btn clear" data-action="backspace">&larr;</button>
+        <button class="calc-btn op" data-op="%">%</button>
+        <button class="calc-btn op" data-op="/">&divide;</button>
+
+        <button class="calc-btn" data-digit="7">7</button>
+        <button class="calc-btn" data-digit="8">8</button>
+        <button class="calc-btn" data-digit="9">9</button>
+        <button class="calc-btn op" data-op="*">&times;</button>
+
+        <button class="calc-btn" data-digit="4">4</button>
+        <button class="calc-btn" data-digit="5">5</button>
+        <button class="calc-btn" data-digit="6">6</button>
+        <button class="calc-btn op" data-op="-">&minus;</button>
+
+        <button class="calc-btn" data-digit="1">1</button>
+        <button class="calc-btn" data-digit="2">2</button>
+        <button class="calc-btn" data-digit="3">3</button>
+        <button class="calc-btn op" data-op="+">+</button>
+
+        <button class="calc-btn" data-digit="0" style="grid-column: span 2;">0</button>
+        <button class="calc-btn" data-action="decimal">.</button>
+        <button class="calc-btn equals" data-action="equals">=</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
+  const EYE_OPEN_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const EYE_OFF_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  const MASK_STRING = '\u20B1 \u25CF\u25CF\u25CF\u25CF\u25CF\u25CF';
+  const HIDE_SAVINGS_TOTAL_KEY = 'ph_savings_tracker_hide_savings_total';
+  const HIDE_LOAN_TOTAL_KEY = 'ph_savings_tracker_hide_loan_total';
+  const hideSavingsTotalBtn = document.getElementById('hide-savings-total-btn');
+  const hideSavingsTotalIconEl = document.getElementById('hide-savings-total-icon');
+  const hideSavingsTotalTextEl = document.getElementById('hide-savings-total-text');
+  const hideLoanTotalBtn = document.getElementById('hide-loan-total-btn');
+  const hideLoanTotalIconEl = document.getElementById('hide-loan-total-icon');
+  const hideLoanTotalTextEl = document.getElementById('hide-loan-total-text');
+  let hideSavingsTotal = false;
+  let hideLoanTotal = false;
+
   const grid = document.getElementById('grid');
   const totalEl = document.getElementById('total');
   const countEl = document.getElementById('acct-count');
@@ -612,6 +808,16 @@
   const historyModalBody = document.getElementById('history-modal-body');
   const historyModalClose = document.getElementById('history-modal-close');
   const historyFilters = document.getElementById('history-filters');
+  const goalModal = document.getElementById('goal-modal');
+  const goalModalClose = document.getElementById('goal-modal-close');
+  const goalAmountInput = document.getElementById('goal-amount-input');
+  const goalDateInput = document.getElementById('goal-date-input');
+  const goalModalSave = document.getElementById('goal-modal-save');
+  const goalModalCancel = document.getElementById('goal-modal-cancel');
+  const calculatorModal = document.getElementById('calculator-modal');
+  const calculatorModalClose = document.getElementById('calculator-modal-close');
+  const calcDisplayEl = document.getElementById('calc-display');
+  let currentGoalEditId = null;
   const backupBtn = document.getElementById('backup-btn');
   const restoreInput = document.getElementById('restore-input');
   const backupStatusEl = document.getElementById('backup-status');
@@ -770,6 +976,9 @@
           parsed.forEach(a=>{
             if(!Array.isArray(a.history)) a.history = [];
             if(typeof a.accountNumber !== 'string') a.accountNumber = '';
+            if(typeof a.hidden !== 'boolean') a.hidden = false;
+              if(typeof a.goal !== 'number') a.goal = 0;
+              if(typeof a.goalTargetDate !== 'string') a.goalTargetDate = '';
           });
           accounts = parsed;
         } else if(parsed && typeof parsed === 'object'){
@@ -777,11 +986,19 @@
             parsed.accounts.forEach(a=>{
               if(!Array.isArray(a.history)) a.history = [];
               if(typeof a.accountNumber !== 'string') a.accountNumber = '';
+              if(typeof a.hidden !== 'boolean') a.hidden = false;
+              if(typeof a.goal !== 'number') a.goal = 0;
+              if(typeof a.goalTargetDate !== 'string') a.goalTargetDate = '';
             });
             accounts = parsed.accounts;
           }
           if(Array.isArray(parsed.loans)){
-            parsed.loans.forEach(l=>{ if(!Array.isArray(l.history)) l.history = []; });
+            parsed.loans.forEach(l=>{
+              if(!Array.isArray(l.history)) l.history = [];
+              if(typeof l.hidden !== 'boolean') l.hidden = false;
+              const isDone = l.installmentsPaid >= l.installmentsTotal;
+              if(isDone && !l.finishedAt) l.finishedAt = Date.now();
+            });
             loans = parsed.loans;
           }
         } else {
@@ -808,11 +1025,14 @@
     accounts.forEach(a=>{
       if(!Array.isArray(a.history)) a.history = [];
       if(typeof a.accountNumber !== 'string') a.accountNumber = '';
+      if(typeof a.hidden !== 'boolean') a.hidden = false;
+              if(typeof a.goal !== 'number') a.goal = 0;
+              if(typeof a.goalTargetDate !== 'string') a.goalTargetDate = '';
     });
     if(!accounts || !accounts.length){
       accounts = [
-        {id:'a1', name:'Checking', balance:0, history:[], accountNumber:''},
-        {id:'a2', name:'Savings', balance:0, history:[], accountNumber:''}
+        {id:'a1', name:'Checking', balance:0, history:[], accountNumber:'', hidden:false, goal:0, goalTargetDate:''},
+        {id:'a2', name:'Savings', balance:0, history:[], accountNumber:'', hidden:false, goal:0, goalTargetDate:''}
       ];
       save();
     }
@@ -831,7 +1051,12 @@
     if(stored){
       try{ loans = JSON.parse(stored); }catch(e){ loans = []; }
     }
-    loans.forEach(l=>{ if(!Array.isArray(l.history)) l.history = []; });
+    loans.forEach(l=>{
+      if(!Array.isArray(l.history)) l.history = [];
+      if(typeof l.hidden !== 'boolean') l.hidden = false;
+      const isDone = l.installmentsPaid >= l.installmentsTotal;
+      if(isDone && !l.finishedAt) l.finishedAt = Date.now();
+    });
     renderLoans();
   }
 
@@ -888,39 +1113,61 @@
     return percentPaid;
   }
 
+  const SEVEN_DAYS_MS_LOAN = 7 * 24 * 60 * 60 * 1000;
+  const FINISHED_THEME = { bg:'#DCEEDC', border:'#2F7A3D', text:'#1F5C29', hover:'rgba(47,122,61,0.12)' };
+
+  function pruneFinishedLoans(){
+    const now = Date.now();
+    const before = loans.length;
+    loans = loans.filter(l=>{
+      const isDone = l.installmentsPaid >= l.installmentsTotal;
+      if(isDone && l.finishedAt && (now - l.finishedAt) >= SEVEN_DAYS_MS_LOAN) return false;
+      return true;
+    });
+    if(loans.length !== before) saveLoans();
+  }
+
   function renderLoans(){
+    pruneFinishedLoans();
     const totalRemaining = loans.reduce((sum, l)=> sum + (l.amount * Math.max(0, l.installmentsTotal - l.installmentsPaid)), 0);
-    loanTotalEl.textContent = fmt(totalRemaining);
+    loanTotalEl.textContent = hideLoanTotal ? MASK_STRING : fmt(totalRemaining);
     loanCountEl.textContent = loans.length + (loans.length === 1 ? ' loan' : ' loans');
     const percentPaid = renderLoanMilestones();
 
     loanGrid.innerHTML = '';
     loans.forEach((loan, idx)=>{
-      const theme = themeFor(idx);
+      const isDone = loan.installmentsPaid >= loan.installmentsTotal;
+      const theme = isDone ? FINISHED_THEME : themeFor(idx);
       const card = document.createElement('div');
       card.className = 'card' + (percentPaid >= 100 && loans.length > 0 ? ' milestone-gold' : '');
       card.style.background = theme.bg;
       card.style.borderLeftColor = theme.border;
       card.style.setProperty('--card-accent', theme.text);
       card.style.setProperty('--card-hover', theme.hover);
-      const isDone = loan.installmentsPaid >= loan.installmentsTotal;
       const currentInstallment = Math.min(loan.installmentsPaid, loan.installmentsTotal);
+      let daysLeftNote = '';
+      if(isDone && loan.finishedAt){
+        const daysLeft = Math.max(0, Math.ceil((SEVEN_DAYS_MS_LOAN - (Date.now() - loan.finishedAt)) / 86400000));
+        daysLeftNote = `<p class="loan-finished-note">Loan is finished. This will auto-delete in ${daysLeft} day${daysLeft===1?'':'s'}.</p>`;
+      }
       card.innerHTML = `
         <div class="card-top">
           <p class="loan-name">${escapeHtml(loan.name)}</p>
+          <button class="eye-btn" data-loan-eye="${loan.id}" aria-label="toggle amount visibility">${loan.hidden ? EYE_OFF_SVG : EYE_OPEN_SVG}</button>
           <button class="del-btn" data-loan-del="${loan.id}" aria-label="delete loan">&times;</button>
         </div>
-        <p class="acct-balance">${fmt(loan.amount)} <span style="font-size:12px;font-weight:400;color:var(--text-mute);">/month</span></p>
+        <p class="acct-balance">${loan.hidden ? MASK_STRING : fmt(loan.amount)} <span style="font-size:12px;font-weight:400;color:var(--text-mute);">/month</span></p>
         <p class="loan-meta">${isDone ? 'loan fully paid' : `installment ${currentInstallment} of ${loan.installmentsTotal}`}</p>
-        ${isDone ? '' : `<p class="loan-countdown" data-due="${loan.dueDate}">${formatCountdown(loan.dueDate)}</p>`}
+        ${isDone ? daysLeftNote : `<p class="loan-countdown" data-due="${loan.dueDate}">${formatCountdown(loan.dueDate)}</p>`}
         <button class="pay-btn" data-pay="${loan.id}" ${isDone ? 'disabled' : ''}>${isDone ? 'loan completed' : 'mark as paid'}</button>
-        <button class="history-link" data-loan-history="${loan.id}">view history</button>
+        <button class="history-link" data-loan-history="${loan.id}">View History</button>
       `;
       loanGrid.appendChild(card);
     });
 
     loanGrid.querySelectorAll('[data-pay]').forEach(b=>b.addEventListener('click', ()=>payLoan(b.getAttribute('data-pay'))));
     loanGrid.querySelectorAll('[data-loan-del]').forEach(b=>b.addEventListener('click', ()=>removeLoan(b.getAttribute('data-loan-del'))));
+    loanGrid.querySelectorAll('[data-loan-eye]').forEach(b=>b.addEventListener('click', ()=>toggleLoanHidden(b.getAttribute('data-loan-eye'))));
     loanGrid.querySelectorAll('[data-loan-history]').forEach(b=>b.addEventListener('click', ()=>openHistory('loan', b.getAttribute('data-loan-history'))));
     updateCountdowns();
   }
@@ -936,6 +1183,8 @@
       const d = new Date(loan.dueDate + 'T00:00:00');
       d.setMonth(d.getMonth() + 1);
       loan.dueDate = d.toISOString().slice(0,10);
+    } else {
+      loan.finishedAt = Date.now();
     }
     saveLoans();
     renderLoans();
@@ -975,7 +1224,8 @@
       dueDate,
       installmentsTotal,
       installmentsPaid: 0,
-      history: []
+      history: [],
+      hidden: false
     });
     saveLoans();
     renderLoans();
@@ -997,35 +1247,49 @@
     return d.innerHTML;
   }
 
+  const SAVINGS_MILESTONES = [20000, 50000, 100000, 150000, 250000];
+
   function renderSavingsMilestones(total){
     let achieved = 0;
-    for(let i=1;i<=10;i++){
-      if(total >= i*10000) achieved = i;
+    for(let i=0;i<SAVINGS_MILESTONES.length;i++){
+      if(total >= SAVINGS_MILESTONES[i]) achieved = i+1;
       else break;
     }
-    savingsMilestonesEl.innerHTML = Array.from({length:10}, (_,i)=>
+    savingsMilestonesEl.innerHTML = Array.from({length: SAVINGS_MILESTONES.length}, (_,i)=>
       `<span class="milestone-dot ${i < achieved ? 'achieved' : ''}"></span>`
     ).join('');
-    if(achieved >= 10){
-      savingsMilestoneLabelEl.textContent = `milestone 10 of 10 — you've reached ${fmt(100000)}!`;
+    if(achieved >= SAVINGS_MILESTONES.length){
+      savingsMilestoneLabelEl.textContent = `Milestone ${SAVINGS_MILESTONES.length} of ${SAVINGS_MILESTONES.length} — You've Reached ${fmt(SAVINGS_MILESTONES[SAVINGS_MILESTONES.length-1])}!`;
     } else {
-      const nextTarget = (achieved+1) * 10000;
-      savingsMilestoneLabelEl.textContent = `milestone ${achieved} of 10 — next milestone at ${fmt(nextTarget)}`;
+      const nextTarget = SAVINGS_MILESTONES[achieved];
+      savingsMilestoneLabelEl.textContent = `Milestone ${achieved} of ${SAVINGS_MILESTONES.length} — Next Milestone at ${fmt(nextTarget)}`;
     }
     return achieved;
   }
 
   function render(){
     const total = accounts.reduce((s,a)=>s+Number(a.balance||0),0);
-    totalEl.textContent = fmt(total);
+    totalEl.textContent = hideSavingsTotal ? MASK_STRING : fmt(total);
     countEl.textContent = accounts.length + (accounts.length===1 ? ' account' : ' accounts');
     renderSavingsMilestones(total);
 
     grid.innerHTML = '';
     accounts.forEach((acc, idx)=>{
-      const theme = themeFor(idx);
+      const hasGoal = acc.goal && acc.goal > 0;
+      const progressPct = hasGoal ? Math.min(100, (acc.balance / acc.goal) * 100) : 0;
+      const goalReached = hasGoal && acc.balance >= acc.goal;
+      let dailyNeeded = null;
+      let goalDateLabel = '';
+      if(hasGoal && !goalReached && acc.goalTargetDate){
+        const remaining = acc.goal - acc.balance;
+        const targetTs = new Date(acc.goalTargetDate + 'T00:00:00').getTime();
+        const daysLeft = Math.max(1, Math.ceil((targetTs - Date.now()) / 86400000));
+        dailyNeeded = remaining / daysLeft;
+        goalDateLabel = new Date(acc.goalTargetDate + 'T00:00:00').toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}).replace(',', '');
+      }
+      const theme = goalReached ? FINISHED_THEME : themeFor(idx);
       const card = document.createElement('div');
-      card.className = 'card' + (total >= 100000 ? ' milestone-gold' : '');
+      card.className = 'card' + (total >= SAVINGS_MILESTONES[SAVINGS_MILESTONES.length-1] ? ' milestone-gold' : '');
       card.style.background = theme.bg;
       card.style.borderLeftColor = theme.border;
       card.style.setProperty('--card-accent', theme.text);
@@ -1035,17 +1299,23 @@
           <div class="logo-wrap" data-logo="${acc.id}">${logoHtml(acc.name)}</div>
           <div class="name-field">
             <input class="acct-name" data-name="${acc.id}" value="${escapeHtml(acc.name)}" spellcheck="false">
-            <input class="acct-number" data-number="${acc.id}" value="${escapeHtml(acc.accountNumber || '')}" placeholder="account number" spellcheck="false">
+            <input class="acct-number" data-number="${acc.id}" value="${escapeHtml(acc.accountNumber || '')}" placeholder="Account Number" spellcheck="false">
           </div>
+          <button class="eye-btn" data-eye="${acc.id}" aria-label="toggle amount visibility">${acc.hidden ? EYE_OFF_SVG : EYE_OPEN_SVG}</button>
           <button class="del-btn" data-del="${acc.id}" aria-label="delete account">&times;</button>
         </div>
-        <p class="acct-balance">${fmt(acc.balance)}</p>
+        <p class="acct-balance">${acc.hidden ? MASK_STRING : fmt(acc.balance)}</p>
+        ${hasGoal ? `<p class="goal-progress-text">${progressPct.toFixed(0)}% of ${fmt(acc.goal)}</p>` : ''}
+        ${dailyNeeded !== null ? `<p class="goal-progress-text">\u20B1${Math.round(dailyNeeded).toLocaleString('en-PH')} per day until ${goalDateLabel}</p>` : ''}
+        ${goalReached ? `<p class="goal-reached-note">Target goal reached!</p>` : ''}
         <div class="controls" data-controls="${acc.id}">
           <button class="ctrl-btn minus" data-minus="${acc.id}">&minus;</button>
           <button class="ctrl-btn" data-plus="${acc.id}">+</button>
         </div>
         <div class="editor" data-editor="${acc.id}"></div>
-        <button class="history-link" data-history="${acc.id}">view history</button>
+        <button class="history-link" data-history="${acc.id}">View History</button>
+        <button class="history-link" data-edit-goal="${acc.id}">Edit Goals</button>
+        <button class="history-link calc-link">Calculator</button>
       `;
       grid.appendChild(card);
     });
@@ -1053,6 +1323,7 @@
     grid.querySelectorAll('[data-plus]').forEach(b=>b.addEventListener('click', ()=>openEdit(b.getAttribute('data-plus'), 1)));
     grid.querySelectorAll('[data-minus]').forEach(b=>b.addEventListener('click', ()=>openEdit(b.getAttribute('data-minus'), -1)));
     grid.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>removeAccount(b.getAttribute('data-del'))));
+    grid.querySelectorAll('[data-eye]').forEach(b=>b.addEventListener('click', ()=>toggleAccountHidden(b.getAttribute('data-eye'))));
     grid.querySelectorAll('[data-history]').forEach(b=>b.addEventListener('click', ()=>openHistory('account', b.getAttribute('data-history'))));
     grid.querySelectorAll('[data-name]').forEach(inp=>{
       inp.addEventListener('change', ()=>renameAccount(inp.getAttribute('data-name'), inp.value));
@@ -1062,6 +1333,59 @@
       inp.addEventListener('change', ()=>updateAccountNumber(inp.getAttribute('data-number'), inp.value));
       inp.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ inp.blur(); } });
     });
+    grid.querySelectorAll('[data-edit-goal]').forEach(b=>b.addEventListener('click', ()=>editGoal(b.getAttribute('data-edit-goal'))));
+    grid.querySelectorAll('.calc-link').forEach(b=>b.addEventListener('click', openCalculator));
+  }
+
+  function updateHideSavingsTotalButton(){
+    hideSavingsTotalIconEl.innerHTML = hideSavingsTotal ? EYE_OFF_SVG : EYE_OPEN_SVG;
+    hideSavingsTotalTextEl.textContent = hideSavingsTotal ? 'Show Total Savings' : 'Hide Total Savings';
+    hideSavingsTotalBtn.classList.toggle('active', hideSavingsTotal);
+  }
+
+  function updateHideLoanTotalButton(){
+    hideLoanTotalIconEl.innerHTML = hideLoanTotal ? EYE_OFF_SVG : EYE_OPEN_SVG;
+    hideLoanTotalTextEl.textContent = hideLoanTotal ? 'Show Total Loan' : 'Hide Total Loan';
+    hideLoanTotalBtn.classList.toggle('active', hideLoanTotal);
+  }
+
+  function loadHideAllState(){
+    try{ hideSavingsTotal = localStorage.getItem(HIDE_SAVINGS_TOTAL_KEY) === 'true'; }catch(e){ hideSavingsTotal = false; }
+    try{ hideLoanTotal = localStorage.getItem(HIDE_LOAN_TOTAL_KEY) === 'true'; }catch(e){ hideLoanTotal = false; }
+    updateHideSavingsTotalButton();
+    updateHideLoanTotalButton();
+  }
+
+  hideSavingsTotalBtn.addEventListener('click', ()=>{
+    hideSavingsTotal = !hideSavingsTotal;
+    try{ localStorage.setItem(HIDE_SAVINGS_TOTAL_KEY, String(hideSavingsTotal)); }catch(e){}
+    updateHideSavingsTotalButton();
+    render();
+  });
+
+  hideLoanTotalBtn.addEventListener('click', ()=>{
+    hideLoanTotal = !hideLoanTotal;
+    try{ localStorage.setItem(HIDE_LOAN_TOTAL_KEY, String(hideLoanTotal)); }catch(e){}
+    updateHideLoanTotalButton();
+    renderLoans();
+  });
+
+  function toggleAccountHidden(id){
+    const acc = accounts.find(a=>a.id===id);
+    if(acc){
+      acc.hidden = !acc.hidden;
+      save();
+      render();
+    }
+  }
+
+  function toggleLoanHidden(id){
+    const loan = loans.find(l=>l.id===id);
+    if(loan){
+      loan.hidden = !loan.hidden;
+      saveLoans();
+      renderLoans();
+    }
   }
 
   function renameAccount(id, newName){
@@ -1081,6 +1405,152 @@
       save();
     }
   }
+
+  function editGoal(id){
+    const acc = accounts.find(a=>a.id===id);
+    if(!acc) return;
+    currentGoalEditId = id;
+    goalAmountInput.value = acc.goal || '';
+    goalDateInput.value = acc.goalTargetDate || '';
+    goalModal.classList.add('open');
+  }
+
+  function closeGoalModal(){
+    goalModal.classList.remove('open');
+    currentGoalEditId = null;
+  }
+
+  goalModalSave.addEventListener('click', ()=>{
+    const acc = accounts.find(a=>a.id===currentGoalEditId);
+    if(!acc){ closeGoalModal(); return; }
+    const parsed = parseFloat(goalAmountInput.value);
+    acc.goal = (!isNaN(parsed) && parsed > 0) ? parsed : 0;
+    acc.goalTargetDate = goalDateInput.value || '';
+    save();
+    render();
+    closeGoalModal();
+  });
+
+  goalModalCancel.addEventListener('click', closeGoalModal);
+  goalModalClose.addEventListener('click', closeGoalModal);
+  goalModal.addEventListener('click', (e)=>{
+    if(e.target === goalModal) closeGoalModal();
+  });
+
+  let calcDisplay = '0';
+  let calcFirstOperand = null;
+  let calcOperator = null;
+  let calcWaitingForSecond = false;
+
+  function calcUpdateDisplay(){
+    calcDisplayEl.textContent = calcDisplay;
+  }
+
+  function calcCompute(a, b, op){
+    switch(op){
+      case '+': return a + b;
+      case '-': return a - b;
+      case '*': return a * b;
+      case '/': return b === 0 ? NaN : a / b;
+      default: return b;
+    }
+  }
+
+  function calcInputDigit(d){
+    if(calcWaitingForSecond){
+      calcDisplay = d;
+      calcWaitingForSecond = false;
+    } else {
+      calcDisplay = calcDisplay === '0' ? d : calcDisplay + d;
+    }
+    calcUpdateDisplay();
+  }
+
+  function calcInputDecimal(){
+    if(calcWaitingForSecond){
+      calcDisplay = '0.';
+      calcWaitingForSecond = false;
+    } else if(!calcDisplay.includes('.')){
+      calcDisplay += '.';
+    }
+    calcUpdateDisplay();
+  }
+
+  function calcHandleOperator(nextOp){
+    const inputValue = parseFloat(calcDisplay);
+    if(calcOperator && calcWaitingForSecond){
+      calcOperator = nextOp;
+      return;
+    }
+    if(calcFirstOperand === null){
+      calcFirstOperand = inputValue;
+    } else if(calcOperator){
+      const result = calcCompute(calcFirstOperand, inputValue, calcOperator);
+      calcDisplay = String(Math.round(result * 1e10) / 1e10);
+      calcFirstOperand = result;
+      calcUpdateDisplay();
+    }
+    calcWaitingForSecond = true;
+    calcOperator = nextOp;
+  }
+
+  function calcEquals(){
+    if(calcOperator === null || calcFirstOperand === null) return;
+    const inputValue = parseFloat(calcDisplay);
+    const result = calcCompute(calcFirstOperand, inputValue, calcOperator);
+    calcDisplay = String(Math.round(result * 1e10) / 1e10);
+    calcFirstOperand = null;
+    calcOperator = null;
+    calcWaitingForSecond = true;
+    calcUpdateDisplay();
+  }
+
+  function calcPercent(){
+    const value = parseFloat(calcDisplay);
+    calcDisplay = String(value / 100);
+    calcUpdateDisplay();
+  }
+
+  function calcClear(){
+    calcDisplay = '0';
+    calcFirstOperand = null;
+    calcOperator = null;
+    calcWaitingForSecond = false;
+    calcUpdateDisplay();
+  }
+
+  function calcBackspace(){
+    calcDisplay = calcDisplay.length > 1 ? calcDisplay.slice(0, -1) : '0';
+    calcUpdateDisplay();
+  }
+
+  document.querySelectorAll('#calculator-modal [data-digit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>calcInputDigit(btn.getAttribute('data-digit')));
+  });
+  document.querySelectorAll('#calculator-modal [data-op]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const op = btn.getAttribute('data-op');
+      if(op === '%'){ calcPercent(); } else { calcHandleOperator(op); }
+    });
+  });
+  document.querySelector('#calculator-modal [data-action="clear"]').addEventListener('click', calcClear);
+  document.querySelector('#calculator-modal [data-action="backspace"]').addEventListener('click', calcBackspace);
+  document.querySelector('#calculator-modal [data-action="decimal"]').addEventListener('click', calcInputDecimal);
+  document.querySelector('#calculator-modal [data-action="equals"]').addEventListener('click', calcEquals);
+
+  function openCalculator(){
+    calcClear();
+    calculatorModal.classList.add('open');
+  }
+
+  function closeCalculator(){
+    calculatorModal.classList.remove('open');
+  }
+
+  calculatorModalClose.addEventListener('click', closeCalculator);
+  calculatorModal.addEventListener('click', (e)=>{
+    if(e.target === calculatorModal) closeCalculator();
+  });
 
   function openEdit(id, sign){
     if(openEditorId && openEditorId !== id){ closeEditor(openEditorId); }
@@ -1221,17 +1691,20 @@
   });
   document.addEventListener('keydown', (e)=>{
     if(e.key === 'Escape' && historyModal.classList.contains('open')) closeHistory();
+    if(e.key === 'Escape' && goalModal.classList.contains('open')) closeGoalModal();
+    if(e.key === 'Escape' && calculatorModal.classList.contains('open')) closeCalculator();
   });
 
   addBtn.addEventListener('click', ()=>{
     const name = prompt('Account name');
     if(name && name.trim()){
-      accounts.push({id:'a'+Date.now(), name:name.trim(), balance:0, history:[], accountNumber:''});
+      accounts.push({id:'a'+Date.now(), name:name.trim(), balance:0, history:[], accountNumber:'', hidden:false, goal:0, goalTargetDate:''});
       save();
       render();
     }
   });
 
+  loadHideAllState();
   load();
   loadLoans();
 })();
